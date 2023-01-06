@@ -17,6 +17,7 @@ import { ColorSchemeName, Pressable } from 'react-native';
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import HomeScreen from '../screens/HomeScreen';
+import NewPostScreen from '../screens/NewPostScreen';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import TabOneScreen from '../screens/TabOneScreen';
@@ -54,9 +55,10 @@ function RootNavigator() {
     <Stack.Navigator>
       <Stack.Screen
         name='Root'
-        component={HomeScreen}
+        component={NewPostScreen}
         options={{ headerShown: false }}
       />
+      {/* <Stack.Screen name='AddNewPost' component={NewPostScreen} options={{headerShown: false}} /> */}
       <Stack.Screen
         name='NotFound'
         component={NotFoundScreen}
