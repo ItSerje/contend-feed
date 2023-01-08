@@ -19,13 +19,20 @@ const uploadPostSchema = Yup.object().shape({
   caption: Yup.string().max(2200, 'Caption has reached the character limit.'),
 });
 
-const FormikPostUploader = () => {
+const urlSchema = Yup.string().url();
+
+//@ts-ignore
+const FormikPostUploader = ({ navigation }) => {
   const [thumbnailUrl, setThumbnailUrl] = useState(PLACEHOLDER_IMG);
 
   return (
     <Formik
       initialValues={{ caption: '', imageUrl: '' }}
-      onSubmit={(values) => console.log(values)}
+      onSubmit={(values) => {
+        console.log(values);
+        console.log('Your post was submitted successfully');
+        navigation.goBack();
+      }}
       validationSchema={uploadPostSchema}
       validateOnMount={true}
     >
@@ -46,7 +53,11 @@ const FormikPostUploader = () => {
             }}
           >
             <Image
-              source={{ uri: thumbnailUrl ? thumbnailUrl : PLACEHOLDER_IMG }}
+              source={{
+                uri: urlSchema.isValidSync(thumbnailUrl)
+                  ? thumbnailUrl
+                  : PLACEHOLDER_IMG,
+              }}
               style={{ width: 100, height: 100 }}
             />
             <View style={{ flex: 1, marginLeft: 12 }}>

@@ -13,6 +13,7 @@ import {
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
 import { ColorSchemeName, Pressable } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
 
 import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
@@ -29,47 +30,65 @@ import {
 } from '../types';
 import LinkingConfiguration from './LinkingConfiguration';
 
-export default function Navigation({
-  colorScheme,
-}: {
-  colorScheme: ColorSchemeName;
-}) {
-  return (
-    <NavigationContainer
-      linking={LinkingConfiguration}
-      theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+const Stack = createStackNavigator();
+
+const screenOptions = {
+  headerShown: false,
+};
+
+export const SignedInStack = () => (
+  <NavigationContainer>
+    <Stack.Navigator
+      initialRouteName='HomeScreen'
+      screenOptions={screenOptions}
     >
-      <RootNavigator />
-    </NavigationContainer>
-  );
-}
+      <Stack.Screen name='HomeScreen' component={HomeScreen} />
+      <Stack.Screen name='NewPostScreen' component={NewPostScreen} />
+    </Stack.Navigator>
+  </NavigationContainer>
+);
+
+// export default function Navigation({
+//   colorScheme,
+// }: {
+//   colorScheme: ColorSchemeName;
+// }) {
+//   return (
+//     <NavigationContainer
+//       linking={LinkingConfiguration}
+//       theme={colorScheme === 'dark' ? DarkTheme : DefaultTheme}
+//     >
+//       <RootNavigator />
+//     </NavigationContainer>
+//   );
+// }
 
 /**
  * A root stack navigator is often used for displaying modals on top of all other content.
  * https://reactnavigation.org/docs/modal
  */
-const Stack = createNativeStackNavigator<RootStackParamList>();
+// const NativeStack = createNativeStackNavigator<RootStackParamList>();
 
-function RootNavigator() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name='Root'
-        component={NewPostScreen}
-        options={{ headerShown: false }}
-      />
-      {/* <Stack.Screen name='AddNewPost' component={NewPostScreen} options={{headerShown: false}} /> */}
-      <Stack.Screen
-        name='NotFound'
-        component={NotFoundScreen}
-        options={{ title: 'Oops!' }}
-      />
-      <Stack.Group screenOptions={{ presentation: 'modal' }}>
-        <Stack.Screen name='Modal' component={ModalScreen} />
-      </Stack.Group>
-    </Stack.Navigator>
-  );
-}
+// function RootNavigator() {
+//   return (
+//     <NativeStack.Navigator>
+//       <NativeStack.Screen
+//         name='Root'
+//         component={NewPostScreen}
+//         options={{ headerShown: false }}
+//       />
+//       {/* <Stack.Screen name='AddNewPost' component={NewPostScreen} options={{headerShown: false}} /> */}
+//       <NativeStack.Screen
+//         name='NotFound'
+//         component={NotFoundScreen}
+//         options={{ title: 'Oops!' }}
+//       />
+//       <NativeStack.Group screenOptions={{ presentation: 'modal' }}>
+//         <NativeStack.Screen name='Modal' component={ModalScreen} />
+//       </NativeStack.Group>
+//     </NativeStack.Navigator>
+//   );
+// }
 
 /**
  * A bottom tab navigator displays tab buttons on the bottom of the display to switch screens.

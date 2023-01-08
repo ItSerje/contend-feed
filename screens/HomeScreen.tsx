@@ -9,10 +9,11 @@ import BottomTabs, {
   bottomTabIcons,
 } from '../components/home/bottomTabs/BottomTabs';
 
-const HomeScreen = () => {
+//@ts-ignore
+const HomeScreen = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
-      <Header />
+      <Header navigation={navigation} />
       <Stories />
       <ScrollView>
         {POSTS.map((post, index) => (
