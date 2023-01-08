@@ -19,6 +19,8 @@ import Colors from '../constants/Colors';
 import useColorScheme from '../hooks/useColorScheme';
 import HomeScreen from '../screens/HomeScreen';
 import NewPostScreen from '../screens/NewPostScreen';
+import LoginScreen from '../screens/LoginScreen';
+import SignupScreen from '../screens/SignupScreen';
 import ModalScreen from '../screens/ModalScreen';
 import NotFoundScreen from '../screens/NotFoundScreen';
 import TabOneScreen from '../screens/TabOneScreen';
@@ -39,11 +41,13 @@ const screenOptions = {
 export const SignedInStack = () => (
   <NavigationContainer>
     <Stack.Navigator
-      initialRouteName='HomeScreen'
+      initialRouteName='LoginScreen'
       screenOptions={screenOptions}
     >
       <Stack.Screen name='HomeScreen' component={HomeScreen} />
       <Stack.Screen name='NewPostScreen' component={NewPostScreen} />
+      <Stack.Screen name='LoginScreen' component={LoginScreen} />
+      <Stack.Screen name='SignupScreen' component={SignupScreen} />
     </Stack.Navigator>
   </NavigationContainer>
 );
