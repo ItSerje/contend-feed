@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import AuthNavigation from './AuthNavigation';
 
 import useCachedResources from './hooks/useCachedResources';
 import useColorScheme from './hooks/useColorScheme';
@@ -13,6 +14,6 @@ export default function App() {
   //   if (!isLoadingComplete) {
   //     return null;
   //   } else {
-  return <SignedInStack />;
+  return <AuthNavigation />;
   //   }
 }
