@@ -23,7 +23,7 @@ const HomeScreen = ({ navigation }) => {
   useEffect(() => {
     const postsCollection = collectionGroup(firebaseDb, 'posts');
     const unsubscribe = onSnapshot(
-      query(postsCollection, orderBy('createdAt')),
+      query(postsCollection, orderBy('createdAt', 'desc')),
       (snapshot) => setPosts(snapshot.docs.map((doc) => doc.data() as TPost))
     );
     return unsubscribe;
