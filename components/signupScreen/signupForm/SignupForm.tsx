@@ -12,7 +12,7 @@ import React from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { collection, addDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { firebaseAppAuth, firebaseDb } from '../../../firebase';
 
 //@ts-ignore
@@ -46,17 +46,16 @@ const SignupForm = ({ navigation }) => {
       );
       console.log('🔥 Firebase User Created Successfully ✅ ', authUser);
 
-      await addDoc(collection(firebaseDb, 'users'), {
-        owner_uid: authUser.user.uid,
-        username: username,
-        email: authUser.user.email,
-        profile_picture: await getRandomProfilePicture(),
-      });
-    } catch (error) {
-      Alert.alert(
-        '🔥 My Lord...',
-        'Username is taken or password is unacceptable'
-      );
+      if (authUser.user.email) {
+        await setDoc(doc(firebaseDb, 'users', authUser.user.email), {
+          owner_uid: authUser.user.uid,
+          username: username,
+          email: authUser.user.email,
+          profile_picture: await getRandomProfilePicture(),
+        });
+      }
+    } catch (error: any) {
+      Alert.alert('🔥 My Lord...', error.message);
     }
   };
 
