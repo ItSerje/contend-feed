@@ -12,7 +12,8 @@ import React from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { firebaseAppAuth } from '../../../firebase';
+import { collection, addDoc } from 'firebase/firestore';
+import { firebaseAppAuth, firebaseDb } from '../../../firebase';
 
 //@ts-ignore
 const SignupForm = ({ navigation }) => {
@@ -26,10 +27,31 @@ const SignupForm = ({ navigation }) => {
       .min(6, 'Your password has to have at least ${min} characters'),
   });
 
-  const onSignup = async (email: string, password: string) => {
+  const getRandomProfilePicture = async () => {
+    const response = await fetch('https://randomuser.me/api');
+    const data = await response.json();
+    return data.results[0].picture.large;
+  };
+
+  const onSignup = async (
+    email: string,
+    password: string,
+    username: string
+  ) => {
     try {
-      await createUserWithEmailAndPassword(firebaseAppAuth, email, password);
-      console.log('🔥 Firebase User Created Successfully ✅ ', email, password);
+      const authUser = await createUserWithEmailAndPassword(
+        firebaseAppAuth,
+        email,
+        password
+      );
+      console.log('🔥 Firebase User Created Successfully ✅ ', authUser);
+
+      await addDoc(collection(firebaseDb, 'users'), {
+        owner_uid: authUser.user.uid,
+        username: username,
+        email: authUser.user.email,
+        profile_picture: await getRandomProfilePicture(),
+      });
     } catch (error) {
       Alert.alert(
         '🔥 My Lord...',
@@ -43,7 +65,7 @@ const SignupForm = ({ navigation }) => {
       <Formik
         initialValues={{ email: '', username: '', password: '' }}
         onSubmit={(values) => {
-          onSignup(values.email, values.password);
+          onSignup(values.email, values.password, values.username);
         }}
         validationSchema={signupFormSchema}
         validateOnMount={true}
