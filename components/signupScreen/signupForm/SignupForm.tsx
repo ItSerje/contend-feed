@@ -5,11 +5,14 @@ import {
   StyleSheet,
   Pressable,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import React from 'react';
 
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { firebaseAppAuth } from '../../../firebase';
 
 //@ts-ignore
 const SignupForm = ({ navigation }) => {
@@ -23,12 +26,24 @@ const SignupForm = ({ navigation }) => {
       .min(6, 'Your password has to have at least ${min} characters'),
   });
 
+  const onSignup = async (email: string, password: string) => {
+    try {
+      await createUserWithEmailAndPassword(firebaseAppAuth, email, password);
+      console.log('🔥 Firebase User Created Successfully ✅ ', email, password);
+    } catch (error) {
+      Alert.alert(
+        '🔥 My Lord...',
+        'Username is taken or password is unacceptable'
+      );
+    }
+  };
+
   return (
     <View style={styles.wrapper}>
       <Formik
         initialValues={{ email: '', username: '', password: '' }}
         onSubmit={(values) => {
-          console.log(values);
+          onSignup(values.email, values.password);
         }}
         validationSchema={signupFormSchema}
         validateOnMount={true}
