@@ -5,11 +5,15 @@ import {
   StyleSheet,
   Pressable,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import React from 'react';
 
 import { Formik } from 'formik';
 import * as Yup from 'yup';
+
+import { firebaseAppAuth } from '../../../firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 //@ts-ignore
 const LoginForm = ({ navigation }) => {
@@ -20,12 +24,32 @@ const LoginForm = ({ navigation }) => {
       .min(6, 'Your password has to have at least ${min} characters'),
   });
 
+  const onLogin = async (email: string, password: string) => {
+    try {
+      await signInWithEmailAndPassword(firebaseAppAuth, email, password);
+      console.log('firebase login successful', email, password);
+    } catch (error: any) {
+      console.log(error);
+      Alert.alert(`My Lord...`, `Email not found or password is incorrect`, [
+        {
+          text: 'OK',
+          onPress: () => console.log('OK'),
+          style: 'cancel',
+        },
+        {
+          text: 'Sign Up',
+          onPress: () => navigation.push('SignupScreen'),
+        },
+      ]);
+    }
+  };
+
   return (
     <View style={styles.wrapper}>
       <Formik
         initialValues={{ email: '', password: '' }}
         onSubmit={(values) => {
-          console.log(values);
+          onLogin(values.email, values.password);
         }}
         validationSchema={loginFormSchema}
         validateOnMount={true}
