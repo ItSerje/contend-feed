@@ -68,7 +68,7 @@ const PostHeader: React.FC<IPostProps> = ({ post }) => (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
       <Image source={{ uri: post.profile_picture }} style={styles.story} />
       <Text style={{ color: 'white', marginLeft: 5, fontWeight: '700' }}>
-        {post.user}
+        {post.username}
       </Text>
     </View>
 
@@ -121,7 +121,7 @@ const Likes: React.FC<IPostProps> = ({ post }) => (
 const Caption: React.FC<IPostProps> = ({ post }) => (
   <View style={{ marginTop: 5 }}>
     <Text style={{ color: 'white' }}>
-      <Text style={{ fontWeight: '600' }}>{post.user}:</Text>
+      <Text style={{ fontWeight: '600' }}>{post.username}:</Text>
       <Text> {post.caption}</Text>
     </Text>
   </View>

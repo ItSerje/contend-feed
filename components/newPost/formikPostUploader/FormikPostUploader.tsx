@@ -62,7 +62,7 @@ const FormikPostUploader = ({ navigation }) => {
 
         await addDoc(collectionRef, {
           imageUrl,
-          user: currentLoggedInUser.username,
+          username: currentLoggedInUser.username,
           profile_picture: currentLoggedInUser.profilePicture,
           owner_uid: firebaseAppAuth.currentUser.uid,
           caption,
