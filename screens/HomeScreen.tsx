@@ -24,7 +24,10 @@ const HomeScreen = ({ navigation }) => {
     const postsCollection = collectionGroup(firebaseDb, 'posts');
     const unsubscribe = onSnapshot(
       query(postsCollection, orderBy('createdAt', 'desc')),
-      (snapshot) => setPosts(snapshot.docs.map((doc) => doc.data() as TPost))
+      (snapshot) =>
+        setPosts(
+          snapshot.docs.map((doc) => ({ ...(doc.data() as TPost), id: doc.id }))
+        )
     );
     return unsubscribe;
   }, []);
