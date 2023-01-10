@@ -19,6 +19,7 @@ import {
   FieldValue,
   updateDoc,
 } from 'firebase/firestore';
+import { ResizeMode, Video } from 'expo-av';
 
 interface IPostProps {
   post: TPost;
@@ -75,7 +76,11 @@ const Post: React.FC<IPostProps> = ({ post }) => {
     <View style={{ marginBottom: 30 }}>
       <Divider width={1} orientation='horizontal' />
       <PostHeader post={post} />
-      <PostImage post={post} />
+      {post.imageUrl.includes('.mp4') ? (
+        <PostVideo post={post} />
+      ) : (
+        <PostImage post={post} />
+      )}
       <View style={{ marginHorizontal: 15, marginTop: 10 }}>
         <PostFooter post={post} handleLike={handleLike} />
         <Likes post={post} />
@@ -112,6 +117,21 @@ const PostImage: React.FC<IPostProps> = ({ post }) => (
     <Image
       source={{ uri: post.imageUrl }}
       style={{ height: '100%', resizeMode: 'cover' }}
+    />
+  </View>
+);
+
+const PostVideo: React.FC<IPostProps> = ({ post }) => (
+  <View style={{ width: '100%', height: 450 }}>
+    <Video
+      style={{ height: '100%' }}
+      source={{
+        uri: post.imageUrl,
+      }}
+      useNativeControls
+      resizeMode={ResizeMode.COVER}
+      isLooping
+      shouldPlay
     />
   </View>
 );
