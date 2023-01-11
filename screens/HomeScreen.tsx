@@ -1,5 +1,5 @@
-import { StyleSheet, ScrollView } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { StyleSheet, FlatList, ViewToken } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../components/home/header/Header';
 import Stories from '../components/home/stories/Stories';
@@ -32,15 +32,43 @@ const HomeScreen = ({ navigation }) => {
     return unsubscribe;
   }, []);
 
+  const [changedItems, setChangedItems] = useState<ViewToken[]>([]);
+
+  const onViewableItemsChanged = useCallback(
+    (info: { changed: ViewToken[] }): void => {
+      setChangedItems(info.changed);
+    },
+    []
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       <Header navigation={navigation} />
       <Stories />
-      <ScrollView style={{ marginBottom: 50 }}>
-        {posts.map((post, index) => (
-          <Post key={index} post={post} />
-        ))}
-      </ScrollView>
+
+      {posts.length > 0 && (
+        <FlatList
+          data={posts}
+          renderItem={({ item }) => {
+            return (
+              <Post
+                post={item}
+                isViewable={changedItems
+                  .map((changedItem) => changedItem.key)
+                  .includes(item.id)}
+              />
+            );
+          }}
+          keyExtractor={(item) => item.id}
+          viewabilityConfig={{
+            itemVisiblePercentThreshold: 55,
+            // minimumViewTime: 300,
+          }}
+          onViewableItemsChanged={onViewableItemsChanged}
+          initialNumToRender={3}
+          maxToRenderPerBatch={6}
+        />
+      )}
       <BottomTabs icons={bottomTabIcons} />
     </SafeAreaView>
   );

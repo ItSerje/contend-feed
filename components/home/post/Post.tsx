@@ -7,7 +7,7 @@ import {
   ImageStyle,
   StyleProp,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Divider } from 'react-native-elements';
 import { Post as TPost } from '../../../types/typePost';
 import { firebaseAppAuth, firebaseDb } from '../../../firebase';
@@ -16,13 +16,13 @@ import {
   arrayUnion,
   collection,
   doc,
-  FieldValue,
   updateDoc,
 } from 'firebase/firestore';
 import { ResizeMode, Video } from 'expo-av';
 
 interface IPostProps {
   post: TPost;
+  isViewable?: boolean;
 }
 
 const postFooterIcons = [
@@ -49,8 +49,8 @@ const postFooterIcons = [
   },
 ];
 
-const Post: React.FC<IPostProps> = ({ post }) => {
-  const handleLike = async (post: IPostProps['post']) => {
+const Post: React.FC<IPostProps> = ({ post, isViewable }) => {
+  const handleLike = async (post: TPost) => {
     try {
       const currentLikeStatus = !post.likes_by_users.includes(
         firebaseAppAuth.currentUser?.email || ''
@@ -77,7 +77,7 @@ const Post: React.FC<IPostProps> = ({ post }) => {
       <Divider width={1} orientation='horizontal' />
       <PostHeader post={post} />
       {post.imageUrl.includes('.mp4') ? (
-        <PostVideo post={post} />
+        <PostVideo post={post} isViewable={isViewable} />
       ) : (
         <PostImage post={post} />
       )}
@@ -92,7 +92,7 @@ const Post: React.FC<IPostProps> = ({ post }) => {
   );
 };
 
-const PostHeader: React.FC<IPostProps> = ({ post }) => (
+const PostHeader: React.FC<{ post: TPost }> = ({ post }) => (
   <View
     style={{
       flexDirection: 'row',
@@ -112,7 +112,7 @@ const PostHeader: React.FC<IPostProps> = ({ post }) => (
   </View>
 );
 
-const PostImage: React.FC<IPostProps> = ({ post }) => (
+const PostImage: React.FC<{ post: TPost }> = ({ post }) => (
   <View style={{ width: '100%', height: 450 }}>
     <Image
       source={{ uri: post.imageUrl }}
@@ -121,26 +121,36 @@ const PostImage: React.FC<IPostProps> = ({ post }) => (
   </View>
 );
 
-const PostVideo: React.FC<IPostProps> = ({ post }) => (
-  <View style={{ width: '100%', height: 450 }}>
-    <Video
-      style={{ height: '100%' }}
-      source={{
-        uri: post.imageUrl,
-      }}
-      useNativeControls
-      resizeMode={ResizeMode.COVER}
-      isLooping
-      shouldPlay
-    />
-  </View>
-);
+const PostVideo: React.FC<{ post: TPost; isViewable?: boolean }> = ({
+  post,
+  isViewable,
+}) => {
+  const video = useRef<Video>(null);
 
-const PostFooter: React.FC<
-  IPostProps & {
-    handleLike: (post: IPostProps['post']) => void;
-  }
-> = ({ handleLike, post }) => (
+  useEffect(() => {
+    isViewable ? video.current?.playAsync() : video.current?.stopAsync();
+  }, [isViewable]);
+
+  return (
+    <View style={{ width: '100%', height: 450 }}>
+      <Video
+        ref={video}
+        style={{ height: '100%' }}
+        source={{
+          uri: post.imageUrl,
+        }}
+        useNativeControls
+        resizeMode={ResizeMode.COVER}
+        isLooping
+      />
+    </View>
+  );
+};
+
+const PostFooter: React.FC<{
+  post: TPost;
+  handleLike: (post: TPost) => void;
+}> = ({ handleLike, post }) => (
   <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
     <View style={styles.leftFooterIconsContainer}>
       <TouchableOpacity onPress={() => handleLike(post)}>
@@ -176,7 +186,7 @@ const Icon: React.FC<{
   </TouchableOpacity>
 );
 
-const Likes: React.FC<IPostProps> = ({ post }) => (
+const Likes: React.FC<{ post: TPost }> = ({ post }) => (
   <View style={{ flexDirection: 'row', marginTop: 4 }}>
     <Text style={{ color: 'white', fontWeight: '600' }}>
       {post.likes_by_users.length.toLocaleString('en')} likes
@@ -184,7 +194,7 @@ const Likes: React.FC<IPostProps> = ({ post }) => (
   </View>
 );
 
-const Caption: React.FC<IPostProps> = ({ post }) => (
+const Caption: React.FC<{ post: TPost }> = ({ post }) => (
   <View style={{ marginTop: 5 }}>
     <Text style={{ color: 'white' }}>
       <Text style={{ fontWeight: '600' }}>{post.username}:</Text>
@@ -193,7 +203,7 @@ const Caption: React.FC<IPostProps> = ({ post }) => (
   </View>
 );
 
-const CommentsSection: React.FC<IPostProps> = ({ post }) => (
+const CommentsSection: React.FC<{ post: TPost }> = ({ post }) => (
   <View style={{ marginTop: 5 }}>
     {!!post.comments.length && (
       <Text style={{ color: 'gray' }}>
@@ -204,7 +214,7 @@ const CommentsSection: React.FC<IPostProps> = ({ post }) => (
   </View>
 );
 
-const Comments: React.FC<IPostProps> = ({ post }) => (
+const Comments: React.FC<{ post: TPost }> = ({ post }) => (
   <>
     {post.comments.map((comment, index) => (
       <View key={index} style={{ flexDirection: 'row', marginTop: 5 }}>
