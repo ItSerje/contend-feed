@@ -7,7 +7,7 @@ import {
   ImageStyle,
   StyleProp,
 } from 'react-native';
-import React, { useEffect, useRef } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import { Divider } from 'react-native-elements';
 import { Post as TPost } from '../../../types/typePost';
 import { firebaseAppAuth, firebaseDb } from '../../../firebase';
@@ -127,8 +127,13 @@ const PostVideo: React.FC<{ post: TPost; isViewable?: boolean }> = ({
 }) => {
   const video = useRef<Video>(null);
 
+  //@ts-ignore
   useEffect(() => {
     isViewable ? video.current?.playAsync() : video.current?.stopAsync();
+    console.log('useEffect in single Video component');
+    //@ts-ignore
+    // video.current?.componentWillUnmount(() => video.current?.stopAsync());
+    return () => video.current?.stopAsync();
   }, [isViewable]);
 
   return (
@@ -254,4 +259,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Post;
+export default memo(Post);

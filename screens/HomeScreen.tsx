@@ -32,14 +32,17 @@ const HomeScreen = ({ navigation }) => {
     return unsubscribe;
   }, []);
 
-  const [changedItems, setChangedItems] = useState<ViewToken[]>([]);
+  const [viewableItems, setViewableItems] = useState<ViewToken[]>([]);
 
   const onViewableItemsChanged = useCallback(
-    (info: { changed: ViewToken[] }): void => {
-      setChangedItems(info.changed);
+    (info: { changed: ViewToken[]; viewableItems: ViewToken[] }): void => {
+      console.log('onViewableItemsChanged handler within FlatList Parent');
+      setViewableItems((_) => info.viewableItems);
     },
     []
   );
+
+  console.log('FlatList Parent, i.e. Home');
 
   return (
     <SafeAreaView style={styles.container}>
@@ -53,20 +56,24 @@ const HomeScreen = ({ navigation }) => {
             return (
               <Post
                 post={item}
-                isViewable={changedItems
-                  .map((changedItem) => changedItem.key)
+                // isViewable={changedItems
+                //   .map((changedItem) => changedItem.key)
+                //   .includes(item.id)}
+                isViewable={viewableItems
+                  .map((viewableItem) => viewableItem.item.id)
                   .includes(item.id)}
               />
             );
           }}
           keyExtractor={(item) => item.id}
           viewabilityConfig={{
-            itemVisiblePercentThreshold: 55,
+            viewAreaCoveragePercentThreshold: 75,
+            // itemVisiblePercentThreshold: 75,
             // minimumViewTime: 300,
           }}
           onViewableItemsChanged={onViewableItemsChanged}
           initialNumToRender={3}
-          maxToRenderPerBatch={6}
+          maxToRenderPerBatch={3}
         />
       )}
       <BottomTabs icons={bottomTabIcons} />
